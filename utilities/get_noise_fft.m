@@ -16,7 +16,7 @@
         end
         
         dims = ndims(Y);
-        sizY = size(Y);
+        sizY = size(Y);        
         N = min(sizY(end),options.max_timesteps);
         if N < sizY(end)
            %Y = reshape(Y,prod(sizY(1:end-1)),[]);
@@ -32,7 +32,7 @@
         ff = 0:Fs/N:Fs/2;
         indf=ff>range_ff(1);
         indf(ff>range_ff(2))=0;
-        if dims > 1
+        if dims > 2
             d = prod(sizY(1:dims-1));
             Y = reshape(Y,d,N);
             Nb = prod(block_size);
@@ -80,6 +80,7 @@
                 end
             end
             sn = cell2mat(SN);
+            psdx = cell2mat(PSDX);
         else
             xdft = fft(Y);
             xdft = xdft(:,1:floor(N/2)+1);
@@ -95,8 +96,7 @@
                 otherwise
                     error('unknown method for averaging noise..')
             end
-        end
-        psdx = cell2mat(PSDX);
+        end        
         if dims > 2
             sn = reshape(sn,sizY(1:dims-1));
         end
