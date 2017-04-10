@@ -79,12 +79,14 @@ if size(Cf,1) > size(A_,2) && strcmpi(options.spatial_method,'regularized');
     error('When using options.spatial_method = regularized pass [A,b] as an input and not just A');
 end
 
+YtempFile = [tempname(), '.mat'];
+
 if tsub ~= 1 % downsample data
     Ts = floor(T/tsub);
     Cf_ds = squeeze(mean(reshape(Cf(:,1:Ts*tsub),[],tsub,Ts),2));            
     T = Ts;
     if memmaped        
-        Y_ds = matfile('Y_ds.mat','Writable',true);
+        Y_ds = matfile(YtempFile,'Writable',true);
         Y_ds.Yr(d,T) = double(0);
         options.sn = zeros(d,1);
         step_size = 2e4;
@@ -177,7 +179,7 @@ if ~isempty(ff)
     Cf_ds(ff,:) = [];
 end
 
-if memmaped; delete('Y_ds.mat'); end
+if memmaped; delete(YtempFile); end
 if strcmpi(options.spatial_method,'constrained');
     b = double(max((double(Yf) - A(:,1:K)*double(Cf_ds(1:K,:)*f_ds'))/(f_ds*f_ds'),0));
     A = A(:,1:K);
